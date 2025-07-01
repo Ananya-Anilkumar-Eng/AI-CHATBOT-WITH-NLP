@@ -1,0 +1,75 @@
+import nltk
+import json
+import string
+import random
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+
+nltk.download('punkt')  
+nltk.download('wordnet')
+nltk.download('stopwords')
+
+lemmatizer = WordNetLemmatizer()
+
+intents = {
+    "intents": [
+        {
+            "tag": "greeting",
+            "patterns": ["Hi", "Hello", "Hey", "Good morning"],
+            "responses": ["Hello!", "Hi there!", "Greetings!"]
+        },
+        {
+            "tag": "goodbye",
+            "patterns": ["See you", "Goodbye"],
+            "responses": ["See you soon!", "Goodbye!", "Take care!"]
+        },
+        {
+            "tag": "thanks",
+            "patterns": ["Thanks", "Thank you", "Thx"],
+            "responses": ["You're welcome!", "No problem!", "Anytime!"]
+        },
+        {
+            "tag": "name",
+            "patterns": ["What is your name?", "Who are you?"],
+            "responses": ["I'm your GRIN REAPER🐱‍👤🐱‍👤🐱‍👤", "My name is Grin Reaper."]
+        },
+        {
+            "tag":"Dad Jokes", 
+            "patterns":["I want to know about dad jokes","Dad Jokes","More Jokes"],
+            "responses":["What does a baby computer call his father? Data.","I only seem to get sick on weekdays. I must have a weekend immune system.",
+            "What do you call a beehive without an exit? Unbelievable.","Did you know that the first french fries weren’t cooked in France? They were cooked in Greece.",
+            "Wanna hear a joke about paper? Never mind. It's tearable.","Why didn't the vampire attack Taylor Swift? She had bad blood.",
+            "I hate it when people say age is only a number. Age is clearly a word.",
+"I can't take my dog to the pond anymore because the ducks keep attacking him. That's what I get for buying a pure bread dog.",
+"Someone complimented my parking today! They left a sweet note on my windshield that said “parking fine.”",
+"I was excited to hear Apple might start selling its own cars until I learned they wouldn’t support windows.","What do you call a sad cup of coffee? Depresso.",
+"I used to be addicted to soap, but I’m clean now.","30 percent of pet owners let their pets sleep in their bed. I tried it and my goldfish died."]
+        },
+    ]
+}
+
+def preprocess(sentence):
+    tokens = nltk.word_tokenize(sentence.lower())
+    tokens = [lemmatizer.lemmatize(w) for w in tokens if w not in string.punctuation and w not in stopwords.words('english')]
+    return tokens
+
+def match_intent(user_input):
+    input_words = preprocess(user_input)
+    for intent in intents["intents"]:
+        for pattern in intent["patterns"]:
+            pattern_words = preprocess(pattern)
+            if set(input_words).intersection(pattern_words):
+                return random.choice(intent["responses"])
+    return "I'm sorry, I didn't understand that."
+
+def chatbot():
+    print("GRIN REAPER🐱‍👤: Hello! Ask me anything (type 'Bye Bye' to exit).")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "bye bye":
+            print("GRIN REAPER🐱‍👤: Goodbye!")
+            break
+        response = match_intent(user_input)
+        print("GRIN REAPER🐱‍👤:", response)
+
+chatbot()
